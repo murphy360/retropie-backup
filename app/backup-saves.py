@@ -71,8 +71,9 @@ def download_files(sftp, files):
     for file in files:
         try:
             local_file = os.path.join(local_backup_path, file)
+            logging.info(f'Downloading remote save file {file} to {local_file}')
             sftp.get("{file}", local_file)
-            logging.info(f'Downloaded {file} to {local_file}')
+            
         except Exception as e:
             logging.error(f'Failed to download files: {e}')
             
