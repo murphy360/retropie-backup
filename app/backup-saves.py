@@ -15,7 +15,7 @@ port = 22
 username = 'pi'
 password = 'raspberry'
 remote_path = '/home/pi/RetroPie/roms/'
-local_backup_path = '/data/'
+local_backup_path = '/data'
 
 # Read environment variables
 if 'RETROPIE_HOST' in os.environ:
@@ -71,6 +71,8 @@ def download_files(sftp, files):
     for file in files:
         try:
             local_file = os.path.join(local_backup_path, file)
+            logging.info(f'Creating local directory {os.path.dirname(local_file)}')
+            os.makedirs(os.path.dirname(local_file), exist_ok=True)
             logging.info(f'Downloading remote save file {file} to {local_file}')
             sftp.get("{file}", local_file)
             
