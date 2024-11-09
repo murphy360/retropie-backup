@@ -53,8 +53,9 @@ def recursive_search(client, path, list_search_extentions):
         files = []
         for file in sftp.listdir(path):
             fullpath = os.path.join(path, file)
+            logging.info(f'Checking {fullpath}')
             if isdir(fullpath, sftp):
-                logging.info(f'Found directory: fullpath')
+                logging.info(f'Found directory: {fullpath}')
                 files += recursive_search(client, fullpath, list_search_extentions)
             else: 
                 for ext in list_search_extentions:
