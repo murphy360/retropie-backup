@@ -58,6 +58,7 @@ def recursive_search(sftp, path, list_search_extentions):
                 logging.info(f'Found directory: {fullpath}, recursing')
                 files += recursive_search(sftp, fullpath, list_search_extentions)
             else: 
+                logging.info(f'Found file: {fullpath}, checking extensions')
                 for ext in list_search_extentions:
                     if file.endswith(ext):
                         files.append(file)
