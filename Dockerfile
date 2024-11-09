@@ -8,8 +8,7 @@ python3-pip \
 vim
 
 # Install Required Python Packages
-RUN pip3 install paramiko \
-logging
+RUN pip3 install paramiko
 
 # Copy app directory and files to /app in container
 COPY app /app
