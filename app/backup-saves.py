@@ -5,8 +5,7 @@ import logging
 from datetime import datetime
 
 # Configure logging
-logging.basicConfig(filename='backup_saves.log', level=logging.INFO, 
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # SSH configuration
 hostname = 'your_retropie_ip'
