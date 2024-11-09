@@ -55,10 +55,12 @@ def recursive_search(client, path, list_search_extentions):
             fullpath = os.path.join(path, file)
             if isdir(fullpath, sftp):
                 logging.info(f'Found directory: fullpath')
+                files += recursive_search(client, fullpath, list_search_extentions)
             else: 
-                logging.info(f'Found file: {fullpath}')
-                files.append(fullpath)
-            logging.info(f'Checking {os.path.join(path, file)}')
+                for ext in list_search_extentions:
+                    if file.endswith(ext):
+                        files.append(file)
+                        logging.info(f'Found file: {file}')
         return files
     except Exception as e:
         logging.error(f'Failed to search files: {e}')
