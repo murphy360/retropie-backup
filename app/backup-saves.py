@@ -18,7 +18,7 @@ local_backup_path = '/data/'
 
 # Read environment variables
 if 'RETROPIE_HOST' in os.environ:
-    hostname = os.environ['RETROPIE_IP']
+    hostname = os.environ['RETROPIE_HOST']
 if 'RETROPIE_USER' in os.environ:
     username = os.environ['RETROPIE_USER']
 if 'RETROPIE_PASS' in os.environ:
