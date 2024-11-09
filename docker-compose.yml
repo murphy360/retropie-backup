@@ -1,0 +1,12 @@
+services:
+  retropie_backup:
+    image: retropie_backup:latest
+    container_name: retropie_backup
+    volumes:
+      - /docker/retropie_backup/data:/data
+    environment:
+      - TZ=America/New_York
+      - RETROPIE_HOST=${RETROPIE_HOST}
+      - RETROPIE_USER=${RETROPIE_USER}
+      - RETROPIE_PASSWORD=${RETROPIE_PASSWORD}
+    restart: unless-stopped
