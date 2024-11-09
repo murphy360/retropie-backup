@@ -72,7 +72,9 @@ def download_files(sftp, files):
         try:
             logging.info(f'Downloading remote save {file} to {local_backup_path}')
             local_file = os.path.join(local_backup_path, file)
-            logging.info(f'Creating local directory {local_file}')
+            
+            local_file_dir = os.path.dirname(local_file)
+            logging.info(f'Creating local directory {local_file_dir}')
             os.makedirs(os.path.dirname(local_file), exist_ok=True)
             logging.info(f'Downloading remote save file {file} to {local_file}')
             sftp.get("{file}", local_file)
