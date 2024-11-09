@@ -59,8 +59,8 @@ def recursive_search(sftp, path, list_search_extentions):
             else: 
                 for ext in list_search_extentions:
                     if file.endswith(ext):
-                        files.append(file)
-                        logging.info(f'Found save file: {file}')
+                        files.append(fullpath)
+                        logging.info(f'Found save file: {fullpath}')
         return files
     
     except Exception as e:
@@ -70,9 +70,8 @@ def recursive_search(sftp, path, list_search_extentions):
 def download_files(sftp, files):
     try:
         for file in files:
-            remote_file = os.path.join(remote_path, file)
             local_file = os.path.join(local_backup_path, file)
-            sftp.get(remote_file, local_file)
+            sftp.get(file, local_file)
             logging.info(f'Downloaded {file} to {local_file}')
     except Exception as e:
         logging.error(f'Failed to download files: {e}')
