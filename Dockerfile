@@ -15,8 +15,8 @@ datetime
 # Copy app directory and files to /app in container
 COPY app /app
 
-# Copy data directory to /data
-COPY data /data
+#Make /data directory
+RUN mkdir /data
 
 # Set the working directory
 WORKDIR /app
