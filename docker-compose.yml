@@ -7,6 +7,6 @@ services:
     environment:
       - TZ=America/New_York
       - RETROPIE_HOST=192.168.68.80
-      - RETROPIE_USER=${RETROPIE_USER}
-      - RETROPIE_PASSWORD=${RETROPIE_PASSWORD}
+      - RETROPIE_USER=pi
+      - RETROPIE_PASSWORD=raspberry
     restart: unless-stopped
