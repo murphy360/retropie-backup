@@ -2,6 +2,7 @@ import os
 import paramiko
 import time
 import logging
+from stat import S_ISDIR
 from datetime import datetime
 
 # Configure logging
@@ -34,7 +35,15 @@ def ssh_connect():
     except Exception as e:
         logging.error(f'Failed to establish SSH connection: {e}')
         return None
-    
+
+
+def isdir(path, sftp):
+    try:
+        return S_ISDIR(sftp.stat(path).st_mode)
+    except IOError:
+        #Path does not exist, so by definition not a directory
+        return False
+
 def recursive_search(client, path, list_search_extentions):
     # no sftp.walk functionality in paramiko
     # so we need to recursively search for files
@@ -43,13 +52,13 @@ def recursive_search(client, path, list_search_extentions):
         sftp = client.open_sftp()
         files = []
         for file in sftp.listdir(path):
-            if sftp.isdir(os.path.join(path, file)):
-                files += recursive_search(client, os.path.join(path, file), list_search_extentions)
-            else:
-                for ext in list_search_extentions:
-                    if file.endswith(ext):
-                        files.append(os.path.join(path, file))
-                        logging.info(f'Found file: {os.path.join(path, file)}')
+            fullpath = os.path.join(path, file)
+            if isdir(fullpath, sftp):
+                logging.info(f'Found directory: fullpath')
+            else: 
+                logging.info(f'Found file: {fullpath}')
+                files.append(fullpath)
+            logging.info(f'Checking {os.path.join(path, file)}')
         return files
     except Exception as e:
         logging.error(f'Failed to search files: {e}')
