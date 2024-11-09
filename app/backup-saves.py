@@ -53,31 +53,27 @@ def recursive_search(sftp, path, list_search_extentions):
         files = []
         for file in sftp.listdir(path):
             fullpath = os.path.join(path, file)
-            logging.info(f'Checking {fullpath}')
             if isdir(fullpath, sftp):
                 logging.info(f'Found directory: {fullpath}, recursing')
                 files += recursive_search(sftp, fullpath, list_search_extentions)
             else: 
-                logging.info(f'Found file: {fullpath}, checking extensions')
                 for ext in list_search_extentions:
                     if file.endswith(ext):
                         files.append(file)
-                        logging.info(f'Found file: {file}')
+                        logging.info(f'Found save file: {file}')
         return files
+    
     except Exception as e:
         logging.error(f'Failed to search files: {e}')
         return []
 
-def download_files(client):
+def download_files(sftp, files):
     try:
-        sftp = client.open_sftp()
-        for dirpath, dirnames, filenames in sftp.walk(remote_path):
-            for filename in filenames:
-                remote_file = os.path.join(dirpath, filename)
-                local_file = os.path.join(local_backup_path, datetime.now().strftime('%Y%m%d_%H%M%S_') + filename)
-                sftp.get(remote_file, local_file)
-                logging.info(f'Downloaded {remote_file} to {local_file}')
-        sftp.close()
+        for file in files:
+            remote_file = os.path.join(remote_path, file)
+            local_file = os.path.join(local_backup_path, file)
+            sftp.get(remote_file, local_file)
+            logging.info(f'Downloaded {file} to {local_file}')
     except Exception as e:
         logging.error(f'Failed to download files: {e}')
 
@@ -89,6 +85,7 @@ def main():
             sftp = client.open_sftp()
             files = recursive_search(sftp, remote_path, ['.state', '.srm'])
             logging.info(f'Found {len(files)} files')
+            download_files(sftp, files)
             client.close()
         time.sleep(3600)  # Check for new files every hour
 
