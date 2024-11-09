@@ -6,7 +6,7 @@ services:
       - /docker/retropie_backup/data:/data
     environment:
       - TZ=America/New_York
-      - RETROPIE_HOST=${RETROPIE_HOST}
+      - RETROPIE_HOST=192.168.68.80
       - RETROPIE_USER=${RETROPIE_USER}
       - RETROPIE_PASSWORD=${RETROPIE_PASSWORD}
     restart: unless-stopped
