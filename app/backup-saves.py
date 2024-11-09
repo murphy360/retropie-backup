@@ -68,13 +68,15 @@ def recursive_search(sftp, path, list_search_extentions):
         return []
 
 def download_files(sftp, files):
-    try:
-        for file in files:
+    for file in files:
+        try:
             local_file = os.path.join(local_backup_path, file)
-            sftp.get(file, local_file)
+            sftp.get("{file}", local_file)
             logging.info(f'Downloaded {file} to {local_file}')
-    except Exception as e:
-        logging.error(f'Failed to download files: {e}')
+        except Exception as e:
+            logging.error(f'Failed to download files: {e}')
+            
+    
 
 def main():
     while True:
