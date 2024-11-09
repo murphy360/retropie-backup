@@ -44,12 +44,12 @@ def isdir(path, sftp):
         #Path does not exist, so by definition not a directory
         return False
 
-def recursive_search(client, path, list_search_extentions):
+def recursive_search(sftp, path, list_search_extentions):
     # no sftp.walk functionality in paramiko
     # so we need to recursively search for files
     # with the given extensions
     try:
-        sftp = client.open_sftp()
+        
         files = []
         for file in sftp.listdir(path):
             fullpath = os.path.join(path, file)
@@ -85,7 +85,8 @@ def main():
         client = ssh_connect()
         if client:
             #download_files(client)
-            files = recursive_search(client, remote_path, ['.state', '.srm'])
+            sftp = client.open_sftp()
+            files = recursive_search(sftp, remote_path, ['.state', '.srm'])
             logging.info(f'Found {len(files)} files')
             client.close()
         time.sleep(3600)  # Check for new files every hour
