@@ -87,7 +87,9 @@ def main():
             logging.info(f'Found {len(files)} files')
             download_files(sftp, files)
             client.close()
+        logging.info('Sleeping for 1 hour')
         time.sleep(3600)  # Check for new files every hour
+
 
 if __name__ == '__main__':
     main()
