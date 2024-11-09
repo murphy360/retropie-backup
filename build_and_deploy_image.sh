@@ -12,7 +12,7 @@ printf "Building the Docker image...\n"
 printf "***************************************************\n\n\n"
 docker build -t retropie_backup .
 
-docker image ls | grep mesh
+docker image ls | grep retropie
 ls -la
 
 # Run Docker Compose in detached mode
