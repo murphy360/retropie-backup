@@ -34,6 +34,26 @@ def ssh_connect():
     except Exception as e:
         logging.error(f'Failed to establish SSH connection: {e}')
         return None
+    
+def recursive_search(client, path, list_search_extentions):
+    # no sftp.walk functionality in paramiko
+    # so we need to recursively search for files
+    # with the given extensions
+    try:
+        sftp = client.open_sftp()
+        files = []
+        for file in sftp.listdir(path):
+            if sftp.isdir(os.path.join(path, file)):
+                files += recursive_search(client, os.path.join(path, file), list_search_extentions)
+            else:
+                for ext in list_search_extentions:
+                    if file.endswith(ext):
+                        files.append(os.path.join(path, file))
+                        logging.info(f'Found file: {os.path.join(path, file)}')
+        return files
+    except Exception as e:
+        logging.error(f'Failed to search files: {e}')
+        return []
 
 def download_files(client):
     try:
@@ -52,7 +72,9 @@ def main():
     while True:
         client = ssh_connect()
         if client:
-            download_files(client)
+            #download_files(client)
+            files = recursive_search(client, remote_path, ['.state', '.srm'])
+            logging.info(f'Found {len(files)} files')
             client.close()
         time.sleep(3600)  # Check for new files every hour
 
