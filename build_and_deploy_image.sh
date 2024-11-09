@@ -25,4 +25,4 @@ docker compose up -d
 printf "\n\n\n***************************************************\n"
 printf "Running docker logs -f...\n"
 printf "***************************************************\n\n\n"
-tail -f /docker/retrpie_backup/data/retropie_backup.log
+tail -f /docker/retropie_backup/data/retropie_backup.log
