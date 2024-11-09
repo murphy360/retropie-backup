@@ -79,7 +79,7 @@ def download_files(sftp, files):
             logging.info(f'Creating local directory {local_file_dir}')
             os.makedirs(os.path.dirname(local_file), exist_ok=True)
             logging.info(f'Downloading remote save file {file} to {local_file_dir}')
-            sftp.get(file, local_file_dir)
+            sftp.get(file, local_file)
             
         except Exception as e:
             logging.error(f'Failed to download files: {e}')
