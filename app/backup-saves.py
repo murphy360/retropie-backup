@@ -73,6 +73,7 @@ def download_files(sftp, files):
             #strip /home/pi/RetroPi/roms/ from the file path
             filename = file.replace(remote_path, '')
             local_file = os.path.join(local_backup_path, filename)
+            local_file_dir = os.path.dirname(local_file)
             
             # Download the file, create archive of existing file if it is the same size
             if os.path.exists(local_file):
@@ -88,7 +89,7 @@ def download_files(sftp, files):
             else: 
                 logging.info(f'Local file {local_file} does not exist, creating')
                 #create the local directory if it doesn't exist
-                local_file_dir = os.path.dirname(local_file)
+                
                 logging.info(f'Creating local directory {local_file_dir}')
                 os.makedirs(os.path.dirname(local_file), exist_ok=True)
 
