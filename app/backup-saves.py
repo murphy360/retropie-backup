@@ -60,6 +60,7 @@ def recursive_search(sftp, path, list_search_extentions):
                 for ext in list_search_extentions:
                     # file extensions have regex-like syntax (.state.*) so we need to check for the extension variations
                     file_ext = file.split('.')[-1]
+                    file_ext = f'.{file_ext}'
                     logging.info(f'Checking file {file} with extension {file_ext} against {ext}')
                     if file_ext == ext or file_ext.startswith(ext):
                         logging.info(f'Found file: {fullpath}')
