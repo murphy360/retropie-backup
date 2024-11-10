@@ -75,9 +75,24 @@ def download_files(sftp, files):
             filename = file.replace(remote_path, '')
             local_file = os.path.join(local_backup_path, filename)
             
+            #create the local directory if it doesn't exist
             local_file_dir = os.path.dirname(local_file)
             logging.info(f'Creating local directory {local_file_dir}')
             os.makedirs(os.path.dirname(local_file), exist_ok=True)
+
+            # Download the file, create archive of existing file if it is the same size
+            if os.path.exists(local_file):
+                logging.info(f'Local file {local_file} already exists, checking size')
+                remote_file_size = sftp.stat(file).st_size
+                local_file_size = os.path.getsize(local_file)
+                if remote_file_size == local_file_size:
+                    logging.info(f'Local file {local_file} is the same size as remote file, skipping')
+                    continue
+                else:
+                    logging.info(f'Local file {local_file} is different size than remote file, creating archive')
+                    os.rename(local_file, f'{local_file}.bak.{datetime.now().strftime("%Y%m%d%H%M%S")}')
+            
+            # Download the file
             logging.info(f'Downloading remote save file {file} to {local_file_dir}')
             sftp.get(file, local_file)
             
