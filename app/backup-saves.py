@@ -17,13 +17,18 @@ password = 'raspberry'
 remote_path = '/home/pi/RetroPie/roms/'
 local_backup_path = '/data'
 
+logging.info(f'Reading environment variables from {os.environ}')
+
 # Read environment variables
 if 'RETROPIE_HOST' in os.environ:
     hostname = os.environ['RETROPIE_HOST']
+    logging.info(f'Using hostname {hostname}')
 if 'RETROPIE_USER' in os.environ:
     username = os.environ['RETROPIE_USER']
+    logging.info(f'Using username {username}')
 if 'RETROPIE_PASS' in os.environ:
     password = os.environ['RETROPIE_PASS']
+    logging.info('Using password from environment variable')
 
 def ssh_connect():
     try:
