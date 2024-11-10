@@ -54,14 +54,14 @@ def recursive_search(sftp, path, list_search_extentions):
         for file in sftp.listdir(path):
             fullpath = os.path.join(path, file)
             if isdir(fullpath, sftp):
-                logging.info(f'Found directory: {fullpath}, recursing')
+                #logging.info(f'Found directory: {fullpath}, recursing')
                 files += recursive_search(sftp, fullpath, list_search_extentions)
             else: 
                 for ext in list_search_extentions:
                     # file extensions have regex-like syntax (.state.*) so we need to check for the extension variations
                     file_ext = file.split('.')[-1]
                     file_ext = f'.{file_ext}'
-                    logging.info(f'Checking file {file} with extension {file_ext} against {ext}')
+                    #logging.info(f'Checking file {file} with extension {file_ext} against {ext}')
                     if file_ext == ext or file_ext.startswith(ext):
                         logging.info(f'Found file: {fullpath}')
                         files.append(fullpath)
@@ -82,20 +82,17 @@ def download_files(sftp, files):
 
             # Download the file, create archive of existing file if it is the same size
             if os.path.exists(local_file):
-                logging.info(f'Local file {local_file} already exists, checking size')
+                #logging.info(f'Local file {local_file} already exists, checking size')
                 remote_file_size = sftp.stat(file).st_size
                 local_file_size = os.path.getsize(local_file)
                 if remote_file_size == local_file_size:
-                    logging.info(f'Local file {local_file} is the same size as remote file, skipping')
+                    #logging.info(f'Local file {local_file} is the same size as remote file, skipping')
                     continue
                 else:
-                    logging.info(f'Local file {local_file} is different size than remote file, creating archive')
+                    logging.info(f'Local file {local_file} is different size than remote file, archiving')
                     os.rename(local_file, f'{local_file}.bak.{datetime.now().strftime("%Y%m%d%H%M%S")}')
             else: 
-                logging.info(f'Local file {local_file} does not exist, creating')
-                #create the local directory if it doesn't exist
-                
-                logging.info(f'Creating local directory {local_file_dir}')
+                logging.info(f'Local file {local_file} does not exist, creating directory')
                 os.makedirs(os.path.dirname(local_file), exist_ok=True)
 
             # Download the file
@@ -116,7 +113,7 @@ def main():
             # file.state can have multiple numbered files .state, .state1, .state2, etc
             # .state.* 
             files = recursive_search(sftp, remote_path, ['.state', '.srm'])
-            logging.info(f'Found {len(files)} files')
+            logging.info(f'Found {len(files)} save files')
             download_files(sftp, files)
             client.close()
         logging.info('Sleeping for 1 hour')
