@@ -58,9 +58,12 @@ def recursive_search(sftp, path, list_search_extentions):
                 files += recursive_search(sftp, fullpath, list_search_extentions)
             else: 
                 for ext in list_search_extentions:
-                    if file.endswith(ext):
+                    # file extensions have regex-like syntax (.state.*) so we need to check for the extension variations
+                    file_ext = file.split('.')[-1]
+                    if file_ext == ext or file_ext.startswith(ext):
+                        logging.info(f'Found file: {fullpath}')
                         files.append(fullpath)
-                        logging.info(f'Found save file: {fullpath}')
+                    
         return files
     
     except Exception as e:
@@ -74,7 +77,7 @@ def download_files(sftp, files):
             filename = file.replace(remote_path, '')
             local_file = os.path.join(local_backup_path, filename)
             local_file_dir = os.path.dirname(local_file)
-            
+
             # Download the file, create archive of existing file if it is the same size
             if os.path.exists(local_file):
                 logging.info(f'Local file {local_file} already exists, checking size')
@@ -110,7 +113,7 @@ def main():
             sftp = client.open_sftp()
             # file.state can have multiple numbered files .state, .state1, .state2, etc
             # .state.* 
-            files = recursive_search(sftp, remote_path, ['.state.*', '.srm'])
+            files = recursive_search(sftp, remote_path, ['.state', '.srm'])
             logging.info(f'Found {len(files)} files')
             download_files(sftp, files)
             client.close()
