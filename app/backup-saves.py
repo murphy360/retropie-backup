@@ -14,7 +14,7 @@ hostname = 'your_retropie_ip'
 port = 22
 username = 'pi'
 password = 'raspberry'
-remote_path = '/home/pi/RetroPie/roms/'
+rems_path = '/home/pi/RetroPie/roms/'
 local_backup_path = '/data'
 
 logging.info(f'Reading environment variables from {os.environ}')
@@ -22,13 +22,19 @@ logging.info(f'Reading environment variables from {os.environ}')
 # Read environment variables
 if 'RETROPIE_HOST' in os.environ:
     hostname = os.environ['RETROPIE_HOST']
-    logging.info(f'Using hostname {hostname}')
+    logging.info(f'Using hostname from environment variable: {hostname}')
 if 'RETROPIE_USER' in os.environ:
     username = os.environ['RETROPIE_USER']
-    logging.info(f'Using username {username}')
+    logging.info(f'Using username from environment variable: {username}')
 if 'RETROPIE_PASS' in os.environ:
     password = os.environ['RETROPIE_PASS']
     logging.info('Using password from environment variable')
+if 'RETROPIE_PORT' in os.environ:
+    port = int(os.environ['RETROPIE_PORT'])
+    logging.info(f'Using port from environment variable: {port}')
+if 'RETROPIE_ROMS_PATH' in os.environ:
+    roms_path = os.environ['RETROPIE_ROMS_PATH']
+    logging.info(f'Using rems path from environment variable: {roms_path}')
 
 def ssh_connect():
     try:
@@ -41,7 +47,7 @@ def ssh_connect():
         logging.error(f'Failed to establish SSH connection: {e}')
         return None
 
-
+# Check if path is a directory or not
 def isdir(path, sftp):
     try:
         return S_ISDIR(sftp.stat(path).st_mode)
@@ -49,6 +55,9 @@ def isdir(path, sftp):
         #Path does not exist, so by definition not a directory
         return False
 
+# Recursively search for files with the given extensions
+# Returns a list of files with the given extensions
+# Files are returned with their full path
 def recursive_search(sftp, path, list_search_extentions):
     # no sftp.walk functionality in paramiko
     # so we need to recursively search for files
@@ -77,16 +86,20 @@ def recursive_search(sftp, path, list_search_extentions):
         logging.error(f'Failed to search files: {e}')
         return []
 
+# Download files from the list of files
+# Returns a list of downloaded files
+# Files are downloaded to the local_backup_path
 def download_files(sftp, files):
     downloaded_files = []
     for file in files:
         try:
             #strip /home/pi/RetroPi/roms/ from the file path
-            filename = file.replace(remote_path, '')
+            filename = file.replace(roms_path, '')
             local_file = os.path.join(local_backup_path, filename)
             local_file_dir = os.path.dirname(local_file)
 
-            # Download the file, create archive of existing file if it is the same size
+            # Check if existing file is the same size as remote file
+            # If not, new saves have been made since last check and we need to archive the old file
             if os.path.exists(local_file):
                 #logging.info(f'Local file {local_file} already exists, checking size')
                 remote_file_size = sftp.stat(file).st_size
@@ -108,25 +121,20 @@ def download_files(sftp, files):
 
         except Exception as e:
             logging.error(f'Failed to download files: {e}')
-    return downloaded_files            
-    
+    return downloaded_files             
 
 def main():
     while True:
         client = ssh_connect()
         if client:
-            #download_files(client)
             sftp = client.open_sftp()
-            # file.state can have multiple numbered files .state, .state1, .state2, etc
-            # .state.* 
-            files = recursive_search(sftp, remote_path, ['.state', '.srm'])
+            files = recursive_search(sftp, roms_path, ['.state', '.srm'])
             logging.info(f'Found {len(files)} save files')
             downloaded_files = download_files(sftp, files)
             logging.info(f'Downloaded {len(downloaded_files)} new or updated save files')
             client.close()
         logging.info('Sleeping for 1 hour')
         time.sleep(3600)  # Check for new files every hour
-
 
 if __name__ == '__main__':
     main()
