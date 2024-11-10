@@ -9,4 +9,5 @@ services:
       - RETROPIE_HOST=192.168.68.80
       - RETROPIE_USER=pi
       - RETROPIE_PASSWORD=raspberry
+      - RETROPIE_ROMS_PATH=/home/pi/RetroPie/roms/  
     restart: unless-stopped

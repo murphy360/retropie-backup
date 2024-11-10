@@ -14,7 +14,7 @@ hostname = 'your_retropie_ip'
 port = 22
 username = 'pi'
 password = 'raspberry'
-rems_path = '/home/pi/RetroPie/roms/'
+roms_path = '/home/pi/RetroPie/roms/'
 local_backup_path = '/data'
 
 logging.info(f'Reading environment variables from {os.environ}')
@@ -34,7 +34,7 @@ if 'RETROPIE_PORT' in os.environ:
     logging.info(f'Using port from environment variable: {port}')
 if 'RETROPIE_ROMS_PATH' in os.environ:
     roms_path = os.environ['RETROPIE_ROMS_PATH']
-    logging.info(f'Using rems path from environment variable: {roms_path}')
+    logging.info(f'Using roms path from environment variable: {roms_path}')
 
 def ssh_connect():
     try:
