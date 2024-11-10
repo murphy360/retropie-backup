@@ -73,6 +73,7 @@ def recursive_search(sftp, path, list_search_extentions):
         return []
 
 def download_files(sftp, files):
+    downloaded_files = []
     for file in files:
         try:
             #strip /home/pi/RetroPi/roms/ from the file path
@@ -98,10 +99,11 @@ def download_files(sftp, files):
             # Download the file
             logging.info(f'Downloading remote save file {file} to {local_file_dir}')
             sftp.get(file, local_file)
-            
+            downloaded_files.append(local_file)
+
         except Exception as e:
             logging.error(f'Failed to download files: {e}')
-            
+    return downloaded_files            
     
 
 def main():
@@ -114,7 +116,8 @@ def main():
             # .state.* 
             files = recursive_search(sftp, remote_path, ['.state', '.srm'])
             logging.info(f'Found {len(files)} save files')
-            download_files(sftp, files)
+            downloaded_files = download_files(sftp, files)
+            logging.info(f'Downloaded {len(downloaded_files)} new or updated save files')
             client.close()
         logging.info('Sleeping for 1 hour')
         time.sleep(3600)  # Check for new files every hour
