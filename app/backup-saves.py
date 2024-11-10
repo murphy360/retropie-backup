@@ -107,7 +107,9 @@ def main():
         if client:
             #download_files(client)
             sftp = client.open_sftp()
-            files = recursive_search(sftp, remote_path, ['.state*', '.srm'])
+            # file.state can have multiple numbered files .state, .state1, .state2, etc
+            # .state.* 
+            files = recursive_search(sftp, remote_path, ['.state.*', '.srm'])
             logging.info(f'Found {len(files)} files')
             download_files(sftp, files)
             client.close()
