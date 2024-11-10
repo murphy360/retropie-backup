@@ -105,7 +105,7 @@ def download_files(sftp, files):
                 remote_file_size = sftp.stat(file).st_size
                 local_file_size = os.path.getsize(local_file)
                 if remote_file_size == local_file_size:
-                    #logging.info(f'Local file {local_file} is the same size as remote file, skipping')
+                    logging.info(f'Local file {local_file} is the same size as remote file, skipping')
                     continue
                 else:
                     logging.info(f'Local file {local_file} is different size than remote file, archiving')
