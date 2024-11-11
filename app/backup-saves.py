@@ -142,11 +142,16 @@ def report_local_files():
             total_file_size += system_size
             save_files_by_system.append((system, system_files, system_size))
             logging.info(f'{save_files_by_system}')
+        
+        
         for system, files, size in save_files_by_system:
             file_size_readable = sizeof_fmt(size)
             logging.info(f'{system}: {files} files, {file_size_readable}')
-        total_file_size = sizeof_fmt(total_file_size)
-        logging.info(f'Found {len(save_files_by_system)} systems with {len(files)} files and total size {total_file_size} stored locally')
+        
+        total_files = sum(files for system, files, size in save_files_by_system)
+        total_file_size = sum(size for system, files, size in save_files_by_system)
+        total_file_size_readable = sizeof_fmt(total_file_size)
+        logging.info(f'Found {len(save_files_by_system)} systems with {total_files} files and total size {total_file_size_readable} stored locally')
     
     except Exception as e:
         logging.error(f'Failed to report local files: {e}')
