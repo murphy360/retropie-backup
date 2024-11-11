@@ -132,10 +132,14 @@ def report_local_files():
         total_file_size = 0
         files = []
         for root, dirs, files in os.walk(local_backup_path):
+            logging.info(f'Checking directory {root} for files')
             for file in files:
+                logging.info(f'Found file {file} in {root}')
                 game_system = root.split('/')[-1]
                 if game_system not in files:
+                    logging.info(f'Found new game system {game_system}')
                     files[game_system] = (0, 0)
+                logging.info(f'Adding file {file} to {game_system}')
                 files[game_system] = (files[game_system][0] + 1, files[game_system][1] + os.path.getsize(os.path.join(root, file)))
                 total_file_size += os.path.getsize(os.path.join(root, file))
                 
