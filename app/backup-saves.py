@@ -133,6 +133,7 @@ def report_local_files():
     try:
         total_file_size = 0
         save_files_by_system = [] # list of tuples by system with number of files and total size
+        logging.info(f'Reporting local files stored in {local_backup_path}')
         for root, dirs, files in os.walk(local_backup_path):
             if root == local_backup_path:
                 continue
