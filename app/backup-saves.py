@@ -4,6 +4,7 @@ import time
 import logging
 from stat import S_ISDIR
 from datetime import datetime
+from datetime import timedelta
 
 # Configure logging
 logging.basicConfig(filename='/data/retropie_backup.log', level=logging.INFO, 
@@ -187,7 +188,8 @@ def main():
             report_local_files()
             logging.info(f'Downloaded {len(downloaded_files)} new or updated save files')
             logging.info('************************************************************************')
-            logging.info('Sleeping for 1 hour')
+            date_time_str_in_one_hour_from_now = (datetime.now() + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S")
+            logging.info(f'Next backup scheduled for {date_time_str_in_one_hour_from_now}')
         else:
             logging.error('Failed to establish SSH connection, sleeping for 1 hour')
         
