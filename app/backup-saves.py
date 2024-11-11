@@ -80,19 +80,19 @@ def recursive_search(sftp, path, list_search_extentions):
                         #logging.info(f'Found file: {fullpath}')
                         files.append(fullpath)
                         total_file_size += sftp.stat(fullpath).st_size
-        logging.info(f'Found {len(files)} files with total size {total_file_size} bytes on RetroPie at {hostname}')  
+        #logging.info(f'Found {len(files)} files with total size {total_file_size} bytes on RetroPie at {hostname}')  
         return files
     
     except Exception as e:
         logging.error(f'Failed to search files: {e}')
         return []
 
-# Download files from the list of files
+# Download files from the list of file paths
 # Returns a list of downloaded files
 # Files are downloaded to the local_backup_path
-def download_files(sftp, files):
+def download_files(sftp, file_paths_to_download):
     downloaded_files = []
-    for file in files:
+    for file in file_paths_to_download:
         try:
             #strip /home/pi/RetroPi/roms/ from the file path
             filename = file.replace(roms_path, '')
@@ -170,9 +170,9 @@ def main():
         client = ssh_connect()
         if client:
             sftp = client.open_sftp()
-            files = recursive_search(sftp, roms_path, ['.state', '.srm'])
-            logging.info(f'Found {len(files)} save files')
-            downloaded_files = download_files(sftp, files)
+            save_files = recursive_search(sftp, roms_path, ['.state', '.srm'])
+            logging.info(f'Found {len(save_files)} save files on RetroPie at {hostname}')
+            downloaded_files = download_files(sftp, save_files)
             client.close()
             report_local_files()
             logging.info(f'Downloaded {len(downloaded_files)} new or updated save files')
