@@ -168,6 +168,13 @@ def sizeof_fmt(num, suffix='B'):
 
 def main():
     while True:
+        date_time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        logging.info('\n\n\n************************************************************************')
+        logging.info(f'Starting RetroPie save backup at {date_time_str}')
+        logging.info(f'Hostname: {hostname}, Port: {port}, Username: {username}, Password: {"*" * len(password)}')
+        logging.info(f'Roms path: {roms_path}, Local backup path: {local_backup_path}')
+        logging.info('************************************************************************\n\n\n')
+
         client = ssh_connect()
         if client:
             sftp = client.open_sftp()
