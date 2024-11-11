@@ -17,6 +17,7 @@ username = 'pi'
 password = 'raspberry'
 roms_path = '/home/pi/RetroPie/roms/'
 local_backup_path = '/data'
+time_between_backups = 3600  # 1 hour
 
 logging.info(f'Reading environment variables from {os.environ}')
 
@@ -36,6 +37,9 @@ if 'RETROPIE_PORT' in os.environ:
 if 'RETROPIE_ROMS_PATH' in os.environ:
     roms_path = os.environ['RETROPIE_ROMS_PATH']
     logging.info(f'Using roms path from environment variable: {roms_path}')
+if 'TIME_BETWEEN_BACKUPS' in os.environ:
+    time_between_backups = int(os.environ['TIME_BETWEEN_BACKUPS'])
+    logging.info(f'Using time between backups from environment variable: {time_between_backups}')
 
 def ssh_connect():
     try:
@@ -188,12 +192,12 @@ def main():
             report_local_files()
             logging.info(f'Downloaded {len(downloaded_files)} new or updated save files')
             logging.info('************************************************************************')
-            date_time_str_in_one_hour_from_now = (datetime.now() + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S")
-            logging.info(f'Next backup scheduled for {date_time_str_in_one_hour_from_now}')
+            
         else:
-            logging.error('Failed to establish SSH connection, sleeping for 1 hour')
-        
-        time.sleep(3600)  # Check for new files every hour
+            logging.error('Failed to establish SSH connection, ensure RetroPie is online and SSH is enabled')
+        date_time_str_for_next_backup = (datetime.now() + timedelta(seconds=time_between_backups)).strftime("%Y-%m-%d %H:%M:%S")
+        logging.info(f'Next backup scheduled at {date_time_str_for_next_backup}')
+        time.sleep(time_between_backups)  # Check for new files (Default: 1 hour)
 
 if __name__ == '__main__':
     main()
