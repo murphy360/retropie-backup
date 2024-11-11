@@ -10,11 +10,11 @@ vim
 # Install Required Python Packages
 RUN pip3 install paramiko
 
-# Clean up to reduce image size
-RUN apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/*
-
 # Update and Upgrade Installed Packages to Latest Versions (if any)
 RUN apt-get update && apt-get upgrade -y
+
+# Clean up to reduce image size
+RUN apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy app directory and files to /app in container
 COPY app /app
