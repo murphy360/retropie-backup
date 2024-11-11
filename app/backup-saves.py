@@ -132,7 +132,7 @@ def download_files(sftp, files):
 def report_local_files():
     try:
         total_file_size = 0
-        save_files_by_system = []
+        save_files_by_system = [] # list of tuples by system with number of files and total size
         for root, dirs, files in os.walk(local_backup_path):
             if root == local_backup_path:
                 continue
@@ -141,9 +141,10 @@ def report_local_files():
             system_size = sum(os.path.getsize(os.path.join(root, name)) for name in files)
             total_file_size += system_size
             save_files_by_system.append((system, system_files, system_size))
+            logging.info(f'{save_files_by_system}')
         for system, files, size in save_files_by_system:
-            file_size = sizeof_fmt(size)
-            logging.info(f'{system}: {files} files, {file_size}')
+            file_size_readable = sizeof_fmt(size)
+            logging.info(f'{system}: {files} files, {file_size_readable}')
         total_file_size = sizeof_fmt(total_file_size)
         logging.info(f'Found {len(save_files_by_system)} systems with {len(files)} files and total size {total_file_size} stored locally')
     
