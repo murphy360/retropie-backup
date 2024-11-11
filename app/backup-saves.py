@@ -128,18 +128,22 @@ def download_files(sftp, files):
 # Returns a list of tuples by game system with the number of files and total size
 # Example: gba: (2, 1024), snes: (5, 2048)
 # /data/gba/game1.state, /data/gba/game1.srm, /data/gba/game2.state.bak.20210101120000
+# don't report /data as a system
 def report_local_files():
     try:
         total_file_size = 0
         save_files_by_system = []
         for root, dirs, files in os.walk(local_backup_path):
-            system = os.path.basename(root)
-            logging.info(f'Found system {system}')
-            if system not in save_files_by_system:
-                save_files_by_system.append(system)
-            for file in files:
-                total_file_size += os.path.getsize(os.path.join(root, file))
-        
+            if root == local_backup_path:
+                continue
+            system = root.split('/')[-1]
+            system_files = len(files)
+            system_size = sum(os.path.getsize(os.path.join(root, name)) for name in files)
+            total_file_size += system_size
+            save_files_by_system.append((system, system_files, system_size))
+        for system, files, size in save_files_by_system:
+            logging.info(f'{system}: {files} files, {size} bytes')
+        logging.info(f'Found {len(save_files_by_system)} systems with {len(files)} files and total size {total_file_size} bytes stored locally')
     
     except Exception as e:
         logging.error(f'Failed to report local files: {e}')
