@@ -63,7 +63,7 @@ def recursive_search(sftp, path, list_search_extentions):
     # so we need to recursively search for files
     # with the given extensions
     try:
-        
+        total_file_size = 0
         files = []
         for file in sftp.listdir(path):
             fullpath = os.path.join(path, file)
@@ -79,7 +79,8 @@ def recursive_search(sftp, path, list_search_extentions):
                     if file_ext == ext or file_ext.startswith(ext):
                         #logging.info(f'Found file: {fullpath}')
                         files.append(fullpath)
-                    
+                        total_file_size += sftp.stat(fullpath).st_size
+        logging.info(f'Found {len(files)} files with total size {total_file_size} bytes on RetroPie at {hostname}')  
         return files
     
     except Exception as e:
@@ -105,7 +106,7 @@ def download_files(sftp, files):
                 remote_file_size = sftp.stat(file).st_size
                 local_file_size = os.path.getsize(local_file)
                 if remote_file_size == local_file_size:
-                    logging.info(f'Local file {local_file} is the same size as remote file, skipping')
+                    #logging.info(f'Local file {local_file} is the same size as remote file, skipping')
                     continue
                 else:
                     logging.info(f'Local file {local_file} is different size than remote file, archiving')
@@ -123,6 +124,30 @@ def download_files(sftp, files):
             logging.error(f'Failed to download files: {e}')
     return downloaded_files             
 
+# Report the number and size of files stored locally
+# Returns a list of tuples by game system with the number of files and total size
+# Example: gba: (2, 1024), snes: (5, 2048)
+def report_local_files():
+    try:
+        total_file_size = 0
+        files = []
+        for root, dirs, files in os.walk(local_backup_path):
+            for file in files:
+                game_system = root.split('/')[-1]
+                if game_system not in files:
+                    files[game_system] = (0, 0)
+                files[game_system] = (files[game_system][0] + 1, files[game_system][1] + os.path.getsize(os.path.join(root, file)))
+                total_file_size += os.path.getsize(os.path.join(root, file))
+                
+        for game_system in files:
+            logging.info(f'Found {files[game_system][0]} files with total size {files[game_system][1]} bytes for {game_system} stored locally')
+
+        logging.info(f'Found {len(files)} total files with total size {total_file_size} bytes stored locally')  
+        return files
+    
+    except Exception as e:
+        logging.error(f'Failed to report local files: {e}')
+
 def main():
     while True:
         client = ssh_connect()
@@ -133,7 +158,11 @@ def main():
             downloaded_files = download_files(sftp, files)
             logging.info(f'Downloaded {len(downloaded_files)} new or updated save files')
             client.close()
-        logging.info('Sleeping for 1 hour')
+            report_local_files()
+            logging.info('Sleeping for 1 hour')
+        else:
+            logging.error('Failed to establish SSH connection, sleeping for 1 hour')
+        
         time.sleep(3600)  # Check for new files every hour
 
 if __name__ == '__main__':
