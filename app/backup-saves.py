@@ -133,7 +133,7 @@ def report_local_files():
     try:
         total_file_size = 0
         save_files_by_system = [] # list of tuples by system with number of files and total size
-        logging.info(f'Reporting local files stored in {local_backup_path}')
+        #logging.info(f'Reporting local files stored in {local_backup_path}')
         for root, dirs, files in os.walk(local_backup_path):
             if root == local_backup_path:
                 continue
@@ -169,7 +169,8 @@ def sizeof_fmt(num, suffix='B'):
 def main():
     while True:
         date_time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        logging.info('\n\n\n************************************************************************')
+        logging.info('\n\n\n')
+        logging.info('************************************************************************')
         logging.info(f'Starting RetroPie save backup at {date_time_str}')
         logging.info(f'Hostname: {hostname}, Port: {port}, Username: {username}, Password: {"*" * len(password)}')
         logging.info(f'Roms path: {roms_path}, Local backup path: {local_backup_path}')
@@ -182,8 +183,10 @@ def main():
             logging.info(f'Found {len(save_files)} save files on RetroPie at {hostname}')
             downloaded_files = download_files(sftp, save_files)
             client.close()
+            logging.info('************************************************************************')
             report_local_files()
             logging.info(f'Downloaded {len(downloaded_files)} new or updated save files')
+            logging.info('************************************************************************')
             logging.info('Sleeping for 1 hour')
         else:
             logging.error('Failed to establish SSH connection, sleeping for 1 hour')
