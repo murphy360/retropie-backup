@@ -46,7 +46,7 @@ def ssh_connect():
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(hostname, port, username, password)
-        logging.info('SSH connection established')
+        logging.info(f'SSH connection established with RetroPie at {hostname}')
         return client
     except Exception as e:
         logging.error(f'Failed to establish SSH connection: {e}')
