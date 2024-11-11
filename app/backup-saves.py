@@ -140,18 +140,17 @@ def report_local_files():
             system_files = len(files)
             system_size = sum(os.path.getsize(os.path.join(root, name)) for name in files)
             total_file_size += system_size
-            save_files_by_system.append((system, system_files, system_size))
-            logging.info(f'{save_files_by_system}')
-        
+            save_files_by_system.append((system, system_files, system_size))        
         
         for system, files, size in save_files_by_system:
             file_size_readable = sizeof_fmt(size)
-            logging.info(f'{system}: {files} files, {file_size_readable}')
+            system_name_padded = system.ljust(10)
+            logging.info(f'{system_name_padded}: {files} files, {file_size_readable}')
         
         total_files = sum(files for system, files, size in save_files_by_system)
         total_file_size = sum(size for system, files, size in save_files_by_system)
         total_file_size_readable = sizeof_fmt(total_file_size)
-        logging.info(f'Found {len(save_files_by_system)} systems with {total_files} files and total size {total_file_size_readable} stored locally')
+        logging.info(f'Backing up {len(save_files_by_system)} systems with {total_files} save files with a total size {total_file_size_readable} stored locally')
     
     except Exception as e:
         logging.error(f'Failed to report local files: {e}')
@@ -174,9 +173,9 @@ def main():
             files = recursive_search(sftp, roms_path, ['.state', '.srm'])
             logging.info(f'Found {len(files)} save files')
             downloaded_files = download_files(sftp, files)
-            logging.info(f'Downloaded {len(downloaded_files)} new or updated save files')
             client.close()
             report_local_files()
+            logging.info(f'Downloaded {len(downloaded_files)} new or updated save files')
             logging.info('Sleeping for 1 hour')
         else:
             logging.error('Failed to establish SSH connection, sleeping for 1 hour')
