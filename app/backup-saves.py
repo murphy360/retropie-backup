@@ -142,11 +142,23 @@ def report_local_files():
             total_file_size += system_size
             save_files_by_system.append((system, system_files, system_size))
         for system, files, size in save_files_by_system:
-            logging.info(f'{system}: {files} files, {size} bytes')
-        logging.info(f'Found {len(save_files_by_system)} systems with {len(files)} files and total size {total_file_size} bytes stored locally')
+            file_size = sizeof_fmt(size)
+            logging.info(f'{system}: {files} files, {file_size}')
+        total_file_size = sizeof_fmt(total_file_size)
+        logging.info(f'Found {len(save_files_by_system)} systems with {len(files)} files and total size {total_file_size} stored locally')
     
     except Exception as e:
         logging.error(f'Failed to report local files: {e}')
+
+# format file size in human readable format
+# This function takes an integer representing the file size in bytes
+# and returns a human readable string with the size in KB, MB, GB, etc.
+def sizeof_fmt(num, suffix='B'): 
+    for unit in ['','K','M','G','T','P','E','Z']: 
+        if abs(num) < 1024.0: 
+            return "%3.1f %s%s" % (num, unit, suffix)
+        num /= 1024.0
+    return "%.1f %s%s" % (num, 'Y', suffix)
 
 def main():
     while True:
